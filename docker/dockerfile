@@ -1,0 +1,28 @@
+FROM centos:7.6.1810
+                                                                        
+# install packages
+COPY yum_packages.txt /tmp/yum_packages.txt
+RUN yum --enablerepo=extras install epel-release -y
+RUN xargs -a /tmp/yum_packages.txt yum install -y
+
+# add new user, non root user should modify build  folder                                                                                           
+RUN groupadd --gid 1000 devel                                                                            && \
+    useradd --uid 1000 -d /home/devel -g devel devel                                                     && \
+    mkdir /home/devel/build_dir                                                                          && \
+    mkdir /home/devel/build_dir/build                                                                    && \
+    chown -R devel:devel /home/devel/build_dir
+
+# install boost
+RUN wget https://sourceforge.net/projects/boost/files/boost/1.60.0/boost_1_60_0.tar.bz2                  && \
+    tar -xvf boost_1_60_0.tar.bz2                                                                        && \
+    cd boost_1_60_0/                                                                                     && \
+    ./bootstrap.sh                                                                                       && \
+    ./b2 -j 8 --prefix=/home/devel/boost_1_60_0 install                   && \
+    cd ..         
+
+#boost
+ENV BOOST_ROOT=/home/devel/boost_1_60_0
+ENV LD_LIBRARY_PATH=/home/devel/boost_1_60_0
+
+WORKDIR /home/devel/build_dir
+ENV TERM=xterm 

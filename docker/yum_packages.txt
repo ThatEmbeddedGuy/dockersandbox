@@ -1,0 +1,15 @@
+gcc
+gcc-c++
+make
+git
+cmake
+valgrind
+wget
+bzip2
+which
+libquadmath-devel
+python
+python-devel
+bzip2-devel
+libxslt-devel 
+libicu-devel
